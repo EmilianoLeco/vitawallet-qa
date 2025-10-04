@@ -2,8 +2,9 @@
 
 Proyecto de automatización de pruebas para API (Petstore) y Mobile (Vita Wallet Android).
 
-**Autor:** Emiliano Lecoña  
+**Autor:** Emiliano Lecoña
 **Fecha:** Octubre 2025
+**Repositorio:** https://github.com/EmilianoLeco/vitawallet-qa
 
 ---
 
@@ -71,8 +72,8 @@ qa-automation-vitawallet/
 
 ### 1. Clonar el repositorio
 ```bash
-git clone https://github.com/tu-usuario/qa-automation-vitawallet.git
-cd qa-automation-vitawallet
+git clone https://github.com/EmilianoLeco/vitawallet-qa.git
+cd vitawallet-qa
 ```
 
 ### 2. Instalar dependencias de Node.js
@@ -98,6 +99,20 @@ source venv/bin/activate
 # Instalar dependencias
 pip install -r requirements.txt
 ```
+
+### 4. Configurar variables de entorno (Mobile Tests)
+```bash
+# Copiar el archivo de ejemplo
+copy .env.example .env
+
+# Editar .env con tus credenciales y configuración de dispositivo
+# - Credenciales de QA
+# - UDID de tu dispositivo Android
+# - Versión de Android
+# - etc.
+```
+
+**Nota:** El archivo `.env` contiene información sensible y NO debe subirse al repositorio.
 
 ---
 
@@ -266,10 +281,9 @@ pytest mobile-tests/tests/test_crypto_exchange.py::TestCryptoExchange::test_comp
 
 **Flujo principal:** Login → Navegación Cripto → Intercambio ARS → USDT
 
-**Credenciales de prueba:**
-- URL: https://qa.vitawallet.io/
-- Usuario: derly+qa02@vitawallet.io
-- Contraseña: vitawallet
+**Configuración:**
+Las credenciales y configuración del dispositivo se obtienen del archivo `.env` (no incluido en el repositorio por seguridad).
+Ver `.env.example` para conocer las variables requeridas.
 
 ---
 
@@ -316,15 +330,40 @@ Todos los scripts BAT generan reportes HTML automáticamente:
 
 ### Variables de entorno
 
-No se requieren variables de entorno para API tests. Los mobile tests utilizan configuración en `mobile-tests/config/capabilities.py`.
+**API Tests:** No requieren variables de entorno.
 
-### Modificar configuración de Appium
+**Mobile Tests:** Utilizan archivo `.env` para credenciales y configuración del dispositivo.
 
-Editar `mobile-tests/config/capabilities.py`:
-```python
-"deviceName": "emulator-5554",  # Cambiar según dispositivo
-"platformVersion": "11",         # Cambiar según versión Android
+**Archivo `.env.example`** (incluido en el repositorio):
+```bash
+# Credenciales de QA
+QA_USER_EMAIL=tu_email@vitawallet.io
+QA_USER_PASSWORD=tu_contraseña
+
+# Configuración del Dispositivo Android
+ANDROID_PLATFORM_VERSION=15
+ANDROID_DEVICE_NAME=TU_DEVICE_NAME
+ANDROID_UDID=TU_DEVICE_UDID
+
+# URLs
+QA_BASE_URL=https://qa.vitawallet.io/
+APPIUM_SERVER_URL=http://127.0.0.1:4723
+
+# Configuración de la App
+APP_PACKAGE=com.vita_wallet
+APP_ACTIVITY=com.vita_wallet.MainActivity
+APK_PATH=mobile-tests/app/VitaQA.apk
+
+# Datos de prueba
+DEFAULT_EXCHANGE_AMOUNT=1000
+FROM_CURRENCY=ARS
+TO_CURRENCY=USDT
 ```
+
+**Pasos para configurar:**
+1. Copiar `.env.example` a `.env`
+2. Editar `.env` con tus credenciales y configuración de dispositivo
+3. El archivo `.env` está en `.gitignore` y NO se sube al repositorio
 
 ---
 
