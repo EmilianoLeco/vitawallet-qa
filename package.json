@@ -24,9 +24,10 @@
   "author": "Emiliano Lecoña",
   "license": "ISC",
   "devDependencies": {
+    "appium": "^2.11.0",
+    "appium-uiautomator2-driver": "^2.34.2",
     "newman": "^6.1.1",
-    "newman-reporter-htmlextra": "^1.23.1",
-    "appium": "^2.11.0"
+    "newman-reporter-htmlextra": "^1.23.1"
   },
   "engines": {
     "node": ">=14.0.0",
