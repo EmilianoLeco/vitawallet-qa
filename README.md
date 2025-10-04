@@ -6,6 +6,8 @@ Proyecto de automatización de pruebas para API (Petstore) y Mobile (Vita Wallet
 **Fecha:** Octubre 2025
 **Repositorio:** https://github.com/EmilianoLeco/vitawallet-qa
 
+> 🐳 **NUEVO:** Ahora disponible con Docker! Ver [DOCKER.md](DOCKER.md) para ejecutar sin instalaciones.
+
 ---
 
 ## Descripción
@@ -60,23 +62,35 @@ qa-automation-vitawallet/
 
 ## Prerequisitos
 
+### Opción 1: Instalación Local (Tradicional)
 - Python 3.8 o superior
 - Node.js 14+ y npm
 - Git
 - Appium 2.x (solo para mobile tests)
 - Android SDK (solo para mobile tests)
 
+### Opción 2: Con Docker (Recomendado) 🐳
+- Docker Desktop
+- Git
+- Archivo `.env` configurado
+
+> **Nota:** Para ejecución con Docker, ver [DOCKER.md](DOCKER.md)
+
 ---
 
 ## Instalación
 
-### 1. Clonar el repositorio
+> 🐳 **¿Prefieres usar Docker?** Salta a [DOCKER.md](DOCKER.md) para instalación y ejecución simplificada.
+
+### Instalación Local
+
+#### 1. Clonar el repositorio
 ```bash
 git clone https://github.com/EmilianoLeco/vitawallet-qa.git
 cd vitawallet-qa
 ```
 
-### 2. Instalar dependencias de Node.js
+#### 2. Instalar dependencias de Node.js
 ```bash
 # Instalar Newman, Appium y dependencias
 npm install
@@ -85,7 +99,7 @@ npm install
 npx appium driver install uiautomator2
 ```
 
-### 3. Configurar entorno Python
+#### 3. Configurar entorno Python
 ```bash
 # Crear entorno virtual
 python -m venv venv
@@ -100,7 +114,7 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-### 4. Configurar variables de entorno (Mobile Tests)
+#### 4. Configurar variables de entorno (Mobile Tests)
 ```bash
 # Copiar el archivo de ejemplo
 copy .env.example .env

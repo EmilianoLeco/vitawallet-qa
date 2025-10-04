@@ -1,10 +1,15 @@
 {
   "name": "qa-automation-vitawallet",
   "version": "1.0.0",
-  "description": "QA Automation project for Vita Wallet - API and Mobile Testing",
+  "description": "QA Automation suite for Vita Wallet - API and Mobile testing",
   "scripts": {
-    "test:api": "newman run api-tests/postman/Petstore_Collection.json -r htmlextra --reporter-htmlextra-export reports/newman/report.html",
-    "appium": "appium"
+    "test:api": "newman run api-tests/postman/Petstore_Collection.json -r cli,htmlextra --reporter-htmlextra-export reports/newman/api_report.html --reporter-htmlextra-darkTheme",
+    "test:api:verbose": "newman run api-tests/postman/Petstore_Collection.json -r cli,htmlextra,json --reporter-htmlextra-export reports/newman/api_report.html --reporter-htmlextra-darkTheme --reporter-json-export reports/newman/api_report.json --verbose",
+    "test:api:ci": "newman run api-tests/postman/Petstore_Collection.json -r cli,json --reporter-json-export reports/newman/api_report_ci.json --bail",
+    "appium": "appium",
+    "install:appium": "npm install -g appium && appium driver install uiautomator2",
+    "check:devices": "adb devices",
+    "postinstall": "echo ✅ Dependencias instaladas. Ejecuta npm run test:api para correr API tests"
   },
   "keywords": [
     "qa",
@@ -12,14 +17,23 @@
     "testing",
     "appium",
     "newman",
-    "api-testing",
-    "mobile-testing"
+    "postman",
+    "api",
+    "mobile"
   ],
-  "author": "",
+  "author": "QA Automation Engineer",
   "license": "ISC",
   "devDependencies": {
-    "newman": "^6.1.0",
-    "newman-reporter-htmlextra": "^1.23.0",
+    "newman": "^6.1.1",
+    "newman-reporter-htmlextra": "^1.23.1",
     "appium": "^2.11.0"
+  },
+  "engines": {
+    "node": ">=14.0.0",
+    "npm": ">=6.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/EmilianoLeco/vitawallet-qa"
   }
 }

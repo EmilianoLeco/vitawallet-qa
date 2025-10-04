@@ -1,0 +1,80 @@
+version: '3.8'
+
+services:
+  # ==================== API TESTS ====================
+  api-tests:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.api-tests
+    container_name: vitawallet-api-tests
+    volumes:
+      - ./reports:/app/reports
+      - ./api-tests:/app/api-tests
+    networks:
+      - qa-network
+    command: pytest api-tests/pytest/ -v --html=reports/pytest/api_report.html --self-contained-html
+
+  # Ejecutar API tests con Newman
+  newman-tests:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.api-tests
+    container_name: vitawallet-newman-tests
+    volumes:
+      - ./reports:/app/reports
+      - ./api-tests:/app/api-tests
+    networks:
+      - qa-network
+    command: npx newman run api-tests/postman/Petstore_Collection.json -r htmlextra --reporter-htmlextra-export reports/newman/newman_report.html
+
+  # ==================== APPIUM SERVER ====================
+  appium:
+    image: appium/appium:v2.2.1-p0
+    container_name: vitawallet-appium-server
+    ports:
+      - "4723:4723"
+    privileged: true
+    volumes:
+      # Montar directorio de APKs
+      - ./mobile-tests/app:/app/apk:ro
+      # Para dispositivos USB reales (Linux/Mac)
+      - /dev/bus/usb:/dev/bus/usb
+    environment:
+      - RELAXED_SECURITY=true
+    networks:
+      - qa-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:4723/status"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ==================== MOBILE TESTS ====================
+  mobile-tests:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.mobile-tests
+    container_name: vitawallet-mobile-tests
+    depends_on:
+      appium:
+        condition: service_healthy
+    env_file:
+      - .env
+    volumes:
+      - ./reports:/app/reports
+      - ./mobile-tests:/app/mobile-tests
+    networks:
+      - qa-network
+    environment:
+      - APPIUM_SERVER_URL=http://appium:4723
+    # Espera a que Appium esté listo antes de ejecutar
+    command: >
+      sh -c "sleep 10 &&
+             pytest mobile-tests/tests/test_crypto_exchange.py::TestCryptoExchange::test_complete_crypto_exchange_flow
+             -v -s
+             --html=reports/mobile/mobile_report.html
+             --self-contained-html"
+
+networks:
+  qa-network:
+    driver: bridge

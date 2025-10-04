@@ -1,0 +1,30 @@
+# Dockerfile para Mobile Tests (Pytest + Appium Client)
+FROM python:3.10-slim
+
+# Instalar dependencias del sistema
+RUN apt-get update && apt-get install -y \
+    curl \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+# Crear directorio de trabajo
+WORKDIR /app
+
+# Copiar archivo de dependencias
+COPY requirements.txt ./
+
+# Instalar dependencias Python
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copiar código fuente
+COPY mobile-tests/ ./mobile-tests/
+COPY pytest.ini ./
+
+# Crear carpetas necesarias
+RUN mkdir -p reports/mobile reports/screenshots
+
+# Variables de entorno por defecto (se sobreescriben con .env)
+ENV APPIUM_SERVER_URL=http://appium:4723
+
+# Comando por defecto: ejecutar test completo de crypto exchange
+CMD ["pytest", "mobile-tests/tests/test_crypto_exchange.py::TestCryptoExchange::test_complete_crypto_exchange_flow", "-v", "-s", "--html=reports/mobile/mobile_report.html", "--self-contained-html"]

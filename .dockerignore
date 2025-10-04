@@ -1,0 +1,62 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+venv/
+.venv/
+.pytest_cache/
+
+# Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Reports (se generan en runtime)
+reports/
+
+# Environment
+.env
+.env.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Git
+.git/
+.gitignore
+
+# Logs
+*.log
+
+# Mobile tests (solo para imagen API tests)
+mobile-tests/
+
+# APKs (se montan como volumen)
+*.apk
+
+# Documentation
+*.md
+documentation/
+
+# CI/CD
+.github/
+
+# Otros
+.dockerignore
+docker-compose.yml
