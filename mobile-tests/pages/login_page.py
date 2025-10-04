@@ -2,41 +2,40 @@ from appium.webdriver.common.appiumby import AppiumBy
 from pages.base_page import BasePage
 
 class LoginPage(BasePage):
-    """Page Object para la pantalla de Login - VITA WALLET"""
-    
-    # ==================== PANTALLA DE BIENVENIDA/ONBOARDING ====================
+    """Page Object para Login"""
+
+    # Pantalla de bienvenida
     WELCOME_LOGIN_BUTTON = (AppiumBy.ACCESSIBILITY_ID, "Iniciar sesión")
     WELCOME_LOGIN_BUTTON_XPATH = (AppiumBy.XPATH, '//android.view.ViewGroup[@content-desc="Iniciar sesión"]')
     WELCOME_LOGIN_BUTTON_UIAUTOMATOR = (AppiumBy.ANDROID_UIAUTOMATOR, 'new UiSelector().description("Iniciar sesión")')
-    
+
     REGISTER_BUTTON = (AppiumBy.ACCESSIBILITY_ID, "Registrarme gratis")
     REGISTER_BUTTON_XPATH = (AppiumBy.XPATH, '//android.view.ViewGroup[@content-desc="Registrarme gratis"]')
-    
-    # ==================== PANTALLA DE FORMULARIO LOGIN ====================
+
+    # Formulario de login
     EMAIL_INPUT = (AppiumBy.ANDROID_UIAUTOMATOR, 'new UiSelector().className("android.widget.EditText").instance(0)')
     PASSWORD_INPUT = (AppiumBy.ANDROID_UIAUTOMATOR, 'new UiSelector().className("android.widget.EditText").instance(1)')
-    
+
     EMAIL_LABEL = (AppiumBy.XPATH, '//android.widget.TextView[@text="Correo electrónico"]')
     PASSWORD_LABEL = (AppiumBy.XPATH, '//android.widget.TextView[@text="Contraseña"]')
     LOGIN_TITLE = (AppiumBy.XPATH, '//android.widget.TextView[@text="Iniciar sesión"]')
-        
+
     SUBMIT_BUTTON = (AppiumBy.ACCESSIBILITY_ID, "Ingresar")
     SUBMIT_BUTTON_XPATH = (AppiumBy.XPATH, '//android.view.ViewGroup[@content-desc="Ingresar"]')
-        
+
     FORGOT_PASSWORD_LINK = (AppiumBy.XPATH, '//*[@text="He olvidado mi contraseña"]')
-    
-    # ==================== POPUP POST-LOGIN ====================
-    # Popup "Recibir y Recargar ahora son Depositar"
+
+    # Popup post-login
     POPUP_ENTENDIDO_BUTTON = (AppiumBy.ACCESSIBILITY_ID, "Entendido")
     POPUP_ENTENDIDO_XPATH = (AppiumBy.XPATH, '//android.view.ViewGroup[@content-desc="Entendido"]')
     POPUP_ENTENDIDO_UIAUTOMATOR = (AppiumBy.ANDROID_UIAUTOMATOR, 'new UiSelector().description("Entendido")')
     POPUP_ENTENDIDO_TEXT = (AppiumBy.XPATH, '//android.widget.TextView[@text="Entendido"]')
-    
-    # ==================== VALIDACIONES ====================
+
+    # Validaciones
     HOME_INDICATOR = (AppiumBy.XPATH, "//*[contains(@text, 'Inicio') or contains(@text, 'Home') or contains(@content-desc, 'Inicio')]")
     ERROR_MESSAGE = (AppiumBy.XPATH, "//*[contains(@text, 'Error') or contains(@text, 'incorrecto') or contains(@text, 'inválido')]")
-        
-    # ==================== COACH MARKS / BANNERS EN HOME ====================
+
+    # Banners en Home
     X1_VIEWGROUP_INSTANCE = (AppiumBy.ANDROID_UIAUTOMATOR, 'new UiSelector().className("android.view.ViewGroup").instance(52)')
     X1_XPATH = (AppiumBy.XPATH, '//android.widget.FrameLayout[@resource-id="android:id/content"]/android.widget.FrameLayout/android.view.ViewGroup/android.view.ViewGroup/android.view.ViewGroup/android.view.ViewGroup[2]/android.widget.FrameLayout/android.view.ViewGroup/android.view.ViewGroup/android.view.ViewGroup/android.view.ViewGroup/android.view.ViewGroup/android.view.ViewGroup/android.view.ViewGroup/android.view.ViewGroup[1]/android.view.ViewGroup/android.widget.FrameLayout/android.view.ViewGroup/android.view.ViewGroup/android.view.ViewGroup[6]/android.view.ViewGroup[2]')
 
@@ -56,10 +55,6 @@ class LoginPage(BasePage):
         super().__init__(driver)
     
     def dismiss_home_banners(self):
-        """
-       Cierra las 4 vistas tipo banner/coach mark en Home tocando la 'X' de cada una.
-       Usa exactamente los localizadores provistos, en orden.
-        """
         self.logger.info("Cerrando banners en Home (4 pasos)")
         sequences = [
             [self.X1_VIEWGROUP_INSTANCE, self.X1_XPATH],
@@ -89,7 +84,6 @@ class LoginPage(BasePage):
         return closed == len(sequences)
 
     def dismiss_popup_if_present(self):
-        """Cerrar popup 'Entendido' si aparece después del login"""
         try:
             self.logger.info("Verificando si hay popup post-login...")
             
@@ -173,7 +167,6 @@ class LoginPage(BasePage):
             return False
 
     def click_welcome_login_button(self):
-        """PASO 1: Click en 'Iniciar sesión' desde pantalla de bienvenida"""
         try:
             self.logger.info("PASO 1: Navegando desde pantalla de bienvenida")
             self.wait_for_seconds(3)
@@ -205,7 +198,6 @@ class LoginPage(BasePage):
                     raise Exception(f"No se pudo navegar al formulario de login: {e}")
     
     def enter_email(self, email):
-        """PASO 2: Ingresar email en el formulario"""
         try:
             self.logger.info(f"PASO 2: Ingresando email: {email}")
             self.wait_for_seconds(1)
@@ -225,7 +217,6 @@ class LoginPage(BasePage):
             raise
     
     def enter_password(self, password):
-        """PASO 3: Ingresar contraseña en el formulario"""
         try:
             self.logger.info("PASO 3: Ingresando contraseña")
             self.wait_for_seconds(1)
@@ -245,7 +236,6 @@ class LoginPage(BasePage):
             raise
     
     def click_submit_button(self):
-        """PASO 4: Click en botón 'Ingresar' para hacer submit del formulario"""
         try:
             self.logger.info("PASO 4: Click en botón 'Ingresar'")
 
@@ -268,7 +258,6 @@ class LoginPage(BasePage):
                 raise Exception(f"No se pudo hacer click en botón Ingresar: {e}")
     
     def login(self, email, password):
-        """Flujo completo de login desde pantalla de bienvenida hasta home"""
         self.logger.info("=" * 70)
         self.logger.info("INICIANDO LOGIN COMPLETO")
         self.logger.info(f"Usuario: {email}")
@@ -309,7 +298,6 @@ class LoginPage(BasePage):
             raise
     
     def is_login_successful(self):
-        """Verificar si el login fue exitoso"""
         try:
             self.logger.info("Verificando si login fue exitoso...")
             self.wait_for_seconds(3)
@@ -331,14 +319,12 @@ class LoginPage(BasePage):
             return False
     
     def is_error_displayed(self):
-        """Verificar si hay mensaje de error en pantalla"""
         try:
             return self.is_element_visible(self.ERROR_MESSAGE, timeout=5)
         except:
             return False
     
     def wait_for_home_screen(self, timeout=15):
-        """Esperar a que aparezca la pantalla principal (home)"""
         try:
 
             # IMPORTANTE: Cerrar popup si aparece

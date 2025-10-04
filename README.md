@@ -274,8 +274,10 @@ pytest mobile-tests/tests/test_crypto_exchange.py::TestCryptoExchange::test_comp
 | DELETE | Positivo | Eliminar orden |
 | DELETE | Negativo | Eliminar orden inexistente |
 
-**Cobertura:** 100% de operaciones CRUD  
-**Success Rate:** 20/20 tests pasando
+**Cobertura:** 100% de operaciones CRUD
+**Success Rate:** 18/20 assertions pasando (2 fallos esperados - ver nota abajo)
+
+> **Nota sobre fallos esperados:** El test "POST - Create Pet Invalid Data (Negative)" falla porque la API pública de Petstore es muy permisiva y acepta datos inválidos retornando `200 OK` en lugar de `400/405/500`. Este es un comportamiento conocido de la API de demostración, no un error en los tests. Los tests están correctamente diseñados para validar el comportamiento esperado de una API real.
 
 ### Mobile Tests - Vita Wallet
 
@@ -303,6 +305,9 @@ Todos los scripts BAT generan reportes HTML automáticamente:
 - ✅ Muestran tiempo de ejecución
 - ✅ Screenshots en caso de fallos (mobile tests)
 - ✅ Formato HTML responsive y profesional
+
+**Nota sobre reportes Newman:**
+Los reportes pueden mostrar 2 assertions fallidas en el test "POST - Create Pet Invalid Data". Esto es esperado y documentado - ver sección de Casos de Prueba para detalles.
 
 ---
 
@@ -383,6 +388,11 @@ pip install -r requirements.txt
 # Instalar dependencias desde package.json:
 npm install
 ```
+
+**`run_api_newman.bat` - Muestra "2 assertions failed"**
+- Esto es **esperado** debido a que la API pública de Petstore acepta datos inválidos
+- Ver la nota en la sección "Casos de Prueba" para más detalles
+- Los tests están correctamente diseñados, es un comportamiento de la API demo
 
 **`run_mobile_tests.bat` - Error: "El entorno virtual no esta activado"**
 ```bash

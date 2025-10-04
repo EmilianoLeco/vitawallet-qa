@@ -7,7 +7,6 @@ import os
 from datetime import datetime
 
 class BasePage:
-    """Clase base para todas las páginas con métodos comunes"""
     
     def __init__(self, driver):
         self.driver = driver
@@ -15,7 +14,6 @@ class BasePage:
         self.logger = logging.getLogger(__name__)
         
     def find_element(self, locator, timeout=20):
-        """Buscar elemento con espera explícita"""
         try:
             element = WebDriverWait(self.driver, timeout).until(
                EC.presence_of_element_located(locator)
@@ -28,7 +26,6 @@ class BasePage:
             raise
     
     def find_elements(self, locator, timeout=20):
-        """Buscar múltiples elementos"""
         try:
             elements = WebDriverWait(self.driver, timeout).until(
                EC.presence_of_all_elements_located(locator)
@@ -40,7 +37,6 @@ class BasePage:
             return []
     
     def click_element(self, locator, timeout=20):
-        """Click en elemento con espera de clickeabilidad"""
         try:
             element = WebDriverWait(self.driver, timeout).until(
                EC.element_to_be_clickable(locator)
@@ -53,7 +49,6 @@ class BasePage:
             raise
     
     def send_keys(self, locator, text, clear_first=True, timeout=20):
-        """Ingresar texto en un elemento"""
         try:
             element = self.find_element(locator, timeout)
             if clear_first:
@@ -66,7 +61,6 @@ class BasePage:
             raise
     
     def get_text(self, locator, timeout=20):
-        """Obtener texto de un elemento"""
         try:
             element = self.find_element(locator, timeout)
             text = element.text
@@ -77,7 +71,6 @@ class BasePage:
             return ""
     
     def is_element_visible(self, locator, timeout=10):
-        """Verificar si elemento es visible"""
         try:
             WebDriverWait(self.driver, timeout).until(
                 EC.visibility_of_element_located(locator)
@@ -89,7 +82,6 @@ class BasePage:
             return False
     
     def wait_for_element_disappear(self, locator, timeout=20):
-        """Esperar a que un elemento desaparezca"""
         try:
             WebDriverWait(self.driver, timeout).until(
                 EC.invisibility_of_element_located(locator)
@@ -101,7 +93,6 @@ class BasePage:
             return False
     
     def scroll_to_element(self, locator):
-        """Scroll hasta un elemento"""
         try:
             element = self.find_element(locator)
             self.driver.execute_script("arguments[0].scrollIntoView(true);", element)
@@ -110,7 +101,6 @@ class BasePage:
             self.logger.error(f" Error en scroll: {e}")
     
     def swipe_up(self, duration=800):
-        """Swipe hacia arriba"""
         try:
             size = self.driver.get_window_size()
             start_x = size['width'] // 2
@@ -123,7 +113,6 @@ class BasePage:
             self.logger.error(f" Error en swipe: {e}")
     
     def swipe_down(self, duration=800):
-        """Swipe hacia abajo"""
         try:
             size = self.driver.get_window_size()
             start_x = size['width'] // 2
@@ -136,7 +125,6 @@ class BasePage:
             self.logger.error(f" Error en swipe: {e}")
     
     def hide_keyboard(self):
-        """Ocultar teclado si está visible"""
         try:
             if self.driver.is_keyboard_shown():
                 self.driver.hide_keyboard()
@@ -145,7 +133,6 @@ class BasePage:
             pass
     
     def take_screenshot(self, name):
-        """Tomar captura de pantalla"""
         try:
             # Crear carpeta si no existe
             os.makedirs("reports/screenshots", exist_ok=True)
@@ -157,17 +144,14 @@ class BasePage:
             self.logger.error(f"Error guardando screenshot: {e}")
 
     def _get_timestamp(self):
-        """Obtener timestamp para nombres de archivo"""
         return datetime.now().strftime("%Y%m%d_%H%M%S")
 
     def wait_for_seconds(self, seconds):
-        """Espera explícita en segundos"""
         import time
         time.sleep(seconds)
         self.logger.info(f"Esperando {seconds} segundos...")
     
     def find_element_by_text(self, text, exact=True):
-        """Buscar elemento por texto visible"""
         try:
             if exact:
                 xpath = f"//*[@text='{text}']"
@@ -181,7 +165,6 @@ class BasePage:
             raise
     
     def click_by_text(self, text, exact=True):
-        """Click en elemento por texto"""
         try:
             element = self.find_element_by_text(text, exact)
             element.click()

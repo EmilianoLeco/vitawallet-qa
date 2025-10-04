@@ -5,29 +5,27 @@ from pages.base_page import BasePage
 
 
 class CryptoPage(BasePage):
-    """Page Object para la pantalla de Intercambio Cripto - VITA WALLET"""
+    """Page Object para Intercambio Cripto"""
 
-    # ==================== HOME / NAV ====================
+    # Navegación
     CRYPTO_TAB = (AppiumBy.ACCESSIBILITY_ID, "Cripto")
     CRYPTO_TAB_XPATH = (AppiumBy.XPATH, '//android.view.ViewGroup[@content-desc="Cripto"]')
     CRYPTO_TAB_UIAUTOMATOR = (AppiumBy.ANDROID_UIAUTOMATOR, 'new UiSelector().description("Cripto")')
 
-    # ==================== INTERCAMBIAR ====================
+    # Intercambiar
     INTERCAMBIAR_TITLE = (AppiumBy.XPATH, '//android.widget.TextView[@text="Intercambiar"]')
     INTERCAMBIAR_TITLE_UIAUTOMATOR = (AppiumBy.ANDROID_UIAUTOMATOR, 'new UiSelector().text("Intercambiar")')
 
-    # (Botones/íconos para abrir pickers; mantenemos tus locators y agregamos alternativas)
     FROM_CURRENCY_DROPDOWN = (AppiumBy.ANDROID_UIAUTOMATOR, 'new UiSelector().className("android.widget.ImageView").instance(6)')
     FROM_CURRENCY_DROPDOWN_XPATH = (AppiumBy.XPATH, '//android.widget.ScrollView/android.view.ViewGroup/android.view.ViewGroup[6]/android.widget.ImageView[2]')
 
     TO_CURRENCY_DROPDOWN = (AppiumBy.ANDROID_UIAUTOMATOR, 'new UiSelector().className("android.widget.ImageView").instance(10)')
     TO_CURRENCY_DROPDOWN_XPATH = (AppiumBy.XPATH, '//android.widget.ScrollView/android.view.ViewGroup/android.view.ViewGroup[10]/android.widget.ImageView[2]')
 
-    # Contenedores comunes del modal/lista
     LIST_CONTAINER = (AppiumBy.XPATH, "//*[contains(@class,'RecyclerView') or contains(@class,'ListView')]")
     MODAL_HEADER  = (AppiumBy.XPATH, "//*[contains(@text,'Seleccionar') or contains(@text,'Elige') or contains(@content-desc,'Seleccionar')]")
 
-    # ==================== INPUT MONTO ====================
+    # Monto
     AMOUNT_INPUT = (AppiumBy.XPATH, '//android.widget.EditText[@text="0"]')
     AMOUNT_INPUT_UIAUTOMATOR = (AppiumBy.ANDROID_UIAUTOMATOR, 'new UiSelector().text("0")')
     AMOUNT_INPUT_EDITTEXT = (AppiumBy.ANDROID_UIAUTOMATOR, 'new UiSelector().className("android.widget.EditText").instance(0)')
@@ -35,46 +33,36 @@ class CryptoPage(BasePage):
     ERROR_MIN_AMOUNT = (AppiumBy.XPATH, '//android.widget.TextView[@text="Monto mínimo: 1.000 ARS"]')
     ERROR_MIN_AMOUNT_UIAUTOMATOR = (AppiumBy.ANDROID_UIAUTOMATOR, 'new UiSelector().text("Monto mínimo: 1.000 ARS")')
 
-    # ==================== CONTINUAR ====================
+    # Botones
     CONTINUE_BUTTON = (AppiumBy.ACCESSIBILITY_ID, "Continuar")
     CONTINUE_BUTTON_XPATH = (AppiumBy.XPATH, '//android.view.ViewGroup[@content-desc="Continuar"]')
     CONTINUE_BUTTON_TEXT = (AppiumBy.XPATH, '//*[@text="Continuar" or .="Continuar"]')
 
-    # ==================== VALIDACIONES ====================
     SUCCESS_MESSAGE = (AppiumBy.XPATH, "//*[contains(@text, 'exitoso') or contains(@text, 'éxito') or contains(@text, 'Éxito')]")
 
-    # ==================== CONFIRMACIÓN ====================
+    # Confirmación
     SUMMARY_TITLE = (AppiumBy.XPATH, '//*[@text="Resumen de la transacción" or contains(@text,"Resumen")]')
-
-    # content-desc dinámico: "Confirmar , 00:50" (varía por el contador)
     CONFIRM_BUTTON_DESC_CONTAINS = (AppiumBy.XPATH, '//*[@content-desc and contains(@content-desc,"Confirmar")]')
-
-    # TextView hijo con posible espacio al final: "Confirmar "
     CONFIRM_BUTTON_TEXT_EXACT = (AppiumBy.ANDROID_UIAUTOMATOR, 'new UiSelector().text("Confirmar ")')
-
-    # Fallback sin espacio por si cambia: "Confirmar"
     CONFIRM_BUTTON_TEXT_TRIM = (AppiumBy.XPATH, '//*[@text="Confirmar" or .="Confirmar"]')
 
-    # ==================== ÉXITO & VOLVER AL INICIO ====================
+    # Éxito
     SUCCESS_TITLE_EXACT = (AppiumBy.ANDROID_UIAUTOMATOR, 'new UiSelector().text("¡Intercambio exitoso!")')
     SUCCESS_TITLE_XPATH = (AppiumBy.XPATH, '//android.widget.TextView[@text="¡Intercambio exitoso!"]')
 
     GO_HOME_A11Y = (AppiumBy.ACCESSIBILITY_ID, "Ir al inicio")
     GO_HOME_XPATH = (AppiumBy.XPATH, '//*[@content-desc="Ir al inicio"]')
 
-    # ==================== HOME / HISTORIAL ====================
+    # Historial
     HISTORY_TITLE = (AppiumBy.ANDROID_UIAUTOMATOR, 'new UiSelector().text("Historial")')
-    # primer item de la lista dentro del ScrollView cuyo content-desc empieza con "Intercambio"
     FIRST_HISTORY_ITEM = (
        AppiumBy.XPATH,
         '(//android.widget.ScrollView//android.view.ViewGroup[contains(@content-desc,"Intercambio")])[1]'
     )
 
-
-    # Reuso un indicador simple de Home (idéntico criterio que en LoginPage)
     HOME_INDICATOR_SIMPLE = (AppiumBy.XPATH, "//*[contains(@text,'Inicio') or contains(@content-desc,'Inicio')]")
 
-    # ==================== COACH MARKS / BANNERS EN HOME ====================
+    # Banners
     X2_DESC_INSTANCE = (AppiumBy.ANDROID_UIAUTOMATOR, 'new UiSelector().description("cerrar").instance(1)')
     X2_XPATH = (AppiumBy.XPATH, '(//android.view.ViewGroup[@content-desc="cerrar"])[2]')
 
@@ -91,10 +79,6 @@ class CryptoPage(BasePage):
         self._wait = WebDriverWait(self.driver, 12)
 
     def dismiss_home_banners(self):
-        """
-       Cierra las 4 vistas tipo banner/coach mark en Home tocando la 'X' de cada una.
-       Usa exactamente los localizadores provistos, en orden.
-        """
         self.logger.info(" Cerrando banners en Home (4 pasos)")
         sequences = [
             [self.X2_DESC_INSTANCE, self.X2_XPATH],
@@ -122,7 +106,6 @@ class CryptoPage(BasePage):
             self.take_screenshot("home_banners_closed")
         return closed == len(sequences)
 
-    # ----------------- helpers internos -----------------
     def _click_any(self, locators, timeout=6, after_wait=0.2):
         last_exc = None
         for loc in locators:
@@ -139,7 +122,6 @@ class CryptoPage(BasePage):
         return False
 
     def _open_picker_and_wait(self, which="from", timeout=8):
-        """Abre el picker 'Desde' o 'Para' y espera que la lista inline esté visible."""
         self.logger.info(f" Abriendo picker: {which}")
         btns = (
             [self.FROM_CURRENCY_DROPDOWN, self.FROM_CURRENCY_DROPDOWN_XPATH]
@@ -166,7 +148,6 @@ class CryptoPage(BasePage):
         return True
 
     def _scroll_text_into_view_android(self, text, instance=0):
-        """Trae a vista un item por texto exacto o parcial con UiScrollable."""
         try:
             ui = (
                 f'new UiScrollable(new UiSelector().scrollable(true).instance({instance}))'
@@ -187,10 +168,6 @@ class CryptoPage(BasePage):
                 return False
 
     def _select_currency_by_code(self, code: str, timeout=10):
-        """
-       Selecciona una moneda en el picker por su código (p.ej. 'ARS' / 'USDT')
-        intentando múltiples estrategias para evitar dependencias frágiles.
-        """
         self.logger.info(f" Buscando moneda: {code}")
 
         # 1) Intentar traerla a vista
@@ -220,9 +197,7 @@ class CryptoPage(BasePage):
             pass
         return False
 
-    # ----------------- navegación / verificaciones -----------------
     def navigate_to_crypto_section(self):
-        """Navegar a la sección de Cripto desde Home"""
         try:
             self.logger.info("Navegando a sección Cripto")
             self.wait_for_seconds(1.5)
@@ -245,7 +220,6 @@ class CryptoPage(BasePage):
             raise
 
     def verify_intercambiar_screen(self):
-        """Verificar que estamos en la pantalla de Intercambiar"""
         try:
             self.logger.info(" Verificando pantalla Intercambiar...")
             if self.is_element_visible(self.INTERCAMBIAR_TITLE, timeout=5) or \
@@ -258,24 +232,19 @@ class CryptoPage(BasePage):
             self.logger.error(f" Error verificando pantalla: {e}")
             return False
 
-    # ----------------- selección de monedas -----------------
     def select_from_currency_ars(self):
-        """Seleccionar ARS como moneda origen"""
         self.logger.info(" Seleccionando moneda origen: ARS")
         self._open_picker_and_wait("from")
         assert self._select_currency_by_code("ARS", timeout=10), "No se pudo elegir ARS (Desde)"
         return True
 
     def select_to_currency_usdt(self):
-        """Seleccionar USDT como moneda destino"""
         self.logger.info(" Seleccionando moneda destino: USDT")
         self._open_picker_and_wait("to")
         assert self._select_currency_by_code("USDT", timeout=10), "No se pudo elegir USDT (Para)"
         return True
 
-    # ----------------- monto / continuar / éxito -----------------
     def enter_amount(self, amount):
-        """Ingresar monto (tap previo + clear + send_keys + esconder teclado)"""
         try:
             self.logger.info(f" Ingresando monto: {amount} ARS")
             # tap/input (probamos 3 variantes)
@@ -317,7 +286,6 @@ class CryptoPage(BasePage):
             raise
 
     def is_min_amount_error_displayed(self):
-        """Verificar si aparece el error de monto mínimo"""
         try:
             self.logger.info(" Verificando error de monto mínimo...")
             if self.is_element_visible(self.ERROR_MIN_AMOUNT, timeout=3) or \
@@ -331,7 +299,6 @@ class CryptoPage(BasePage):
             return False
 
     def click_continue_button(self):
-        """Click en botón 'Continuar'"""
         try:
             self.logger.info(" Click en 'Continuar'")
             if self._click_any([self.CONTINUE_BUTTON, self.CONTINUE_BUTTON_XPATH, self.CONTINUE_BUTTON_TEXT], timeout=10, after_wait=0.4):
@@ -346,7 +313,6 @@ class CryptoPage(BasePage):
             raise
 
     def is_exchange_successful(self):
-        """Verificar si el intercambio fue exitoso"""
         try:
             self.logger.info(" Verificando éxito del intercambio…")
             self.wait_for_seconds(2)
@@ -364,14 +330,12 @@ class CryptoPage(BasePage):
             return False
 
     def wait_for_summary_screen(self, timeout=10):
-        """Espera que aparezca 'Resumen de la transacción'."""
         self.logger.info(" Esperando 'Resumen de la transacción'…")
         self.find_element(self.SUMMARY_TITLE, timeout=timeout)
         self.take_screenshot("15_summary_visible")
         return True
 
     def click_confirm_button(self, timeout=12):
-        """Click en 'Confirmar' (content-desc dinámico o TextView con/sin espacio)."""
         self.logger.info(" Click en 'Confirmar'")
         # 1) content-desc que contiene "Confirmar" (cubre contador dinámico)
         try:
@@ -393,10 +357,6 @@ class CryptoPage(BasePage):
         return True
 
     def confirm_success_and_go_home(self, timeout=12):
-        """
-       Valida la pantalla '¡Intercambio exitoso!', toca 'Ir al inicio'
-        y verifica que vuelve al Home.
-        """
         self.logger.info(" Validando éxito y volviendo al inicio")
 
         # 1) Éxito
@@ -424,14 +384,12 @@ class CryptoPage(BasePage):
         return True
     
     def wait_for_history_title(self, timeout=10):
-        """Confirma que estamos en el Home viendo 'Historial'."""
         self.logger.info(" Verificando título 'Historial'…")
         self.find_element(self.HISTORY_TITLE, timeout=timeout)
         self.take_screenshot("19_history_title")
         return True
 
     def _scroll_down(self, percent=0.7):
-        """Scroll simple hacia abajo usando W3C scrollGesture (sin TouchAction)."""
         try:
             size = self.driver.get_window_size()
             region = {
@@ -445,7 +403,6 @@ class CryptoPage(BasePage):
             pass
 
     def open_first_history_item(self):
-        """Baja un poco y toca el primer item cuyo content-desc contiene 'Intercambio'."""
         self.logger.info(" Abriendo el último intercambio (primer item de la lista)")
 
         # 1) asegurar que estamos en la pantalla con ScrollView
@@ -485,18 +442,7 @@ class CryptoPage(BasePage):
         self.logger.info(" Primer intercambio abierto (fallback)")
         return True
 
-    # ----------------- flujo completo -----------------
     def perform_exchange(self, from_currency="ARS", to_currency="USDT", amount=1000):
-        """
-       Realizar intercambio completo ARS → USDT
-        1) Navegar a Cripto
-        2) Verificar pantalla Intercambiar
-        3) Seleccionar ARS (Desde)
-        4) Seleccionar USDT (Para)
-        5) Ingresar monto
-        6) Continuar
-        7) Verificar éxito
-        """
         self.logger.info("=" * 70)
         self.logger.info(f" INICIANDO INTERCAMBIO: {amount} {from_currency} → {to_currency}")
         self.logger.info("=" * 70)
@@ -529,9 +475,7 @@ class CryptoPage(BasePage):
             self.take_screenshot("error_exchange_process")
             raise
 
-    # ----------------- test negativo -----------------
     def test_min_amount_validation(self, amount=500):
-        """Validar mensaje de error con monto menor a 1000 ARS"""
         self.logger.info(" TEST NEGATIVO: Monto menor a mínimo")
         try:
             self.navigate_to_crypto_section()

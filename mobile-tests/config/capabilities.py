@@ -1,4 +1,3 @@
-#mobile-tests/config/capabilities.py
 import os
 from pathlib import Path
 from dotenv import load_dotenv
@@ -7,16 +6,14 @@ from dotenv import load_dotenv
 load_dotenv()
 
 class AppiumCapabilities:
-    """Configuración de capabilities para Appium"""
-    
+
     # Paths
     BASE_DIR = Path(__file__).parent.parent.parent
     APP_PATH = BASE_DIR / os.getenv("APK_PATH", "mobile-tests/app/VitaQA.apk")
     
     @classmethod
     def get_android_capabilities(cls):
-        """Capabilities para dispositivos Android - VITA WALLET"""
-        
+
         capabilities = {
             # Configuración básica de Appium
             "platformName": "Android",
@@ -57,12 +54,10 @@ class AppiumCapabilities:
     
     @staticmethod
     def get_appium_server_url():
-        """URL del servidor Appium desde .env"""
         return os.getenv("APPIUM_SERVER_URL", "http://127.0.0.1:4723")
     
     @classmethod
     def validate_app_exists(cls):
-        """Validar que el APK existe"""
         if not cls.APP_PATH.exists():
             raise FileNotFoundError(
                 f"❌ APK no encontrado en: {cls.APP_PATH}\n"
@@ -72,7 +67,6 @@ class AppiumCapabilities:
 
 
 class VitaWalletConfig:
-    """Configuración específica de Vita Wallet"""
 
     # Credenciales desde .env
     QA_USER_EMAIL = os.getenv("QA_USER_EMAIL")
@@ -91,7 +85,6 @@ class VitaWalletConfig:
     
     @staticmethod
     def get_test_data():
-        """Obtener datos de prueba"""
         return {
             "email": VitaWalletConfig.QA_USER_EMAIL,
             "password": VitaWalletConfig.QA_USER_PASSWORD,

@@ -1,4 +1,3 @@
-# mobile-tests/tests/test_crypto_exchange.py
 import pytest
 import logging
 from appium import webdriver
@@ -26,11 +25,9 @@ logger = logging.getLogger(__name__)
 
 
 class TestCryptoExchange:
-    """Suite de tests para intercambio cripto - VITA WALLET"""
-    
+
     @pytest.fixture(scope="function")
     def driver(self):
-        """Fixture para inicializar driver de Appium"""
         logger.info("=" * 70)
         logger.info("Iniciando Appium Driver")
         logger.info("=" * 70)
@@ -60,32 +57,17 @@ class TestCryptoExchange:
     
     @pytest.fixture(scope="function")
     def login_page(self, driver):
-        """Fixture para LoginPage"""
         return LoginPage(driver)
-    
+
     @pytest.fixture(scope="function")
     def crypto_page(self, driver):
-        """Fixture para CryptoPage"""
         return CryptoPage(driver)
-    
+
     @pytest.fixture(scope="function")
     def test_data(self):
-        """Fixture para datos de prueba"""
         return VitaWalletConfig.get_test_data()
     
     def test_complete_crypto_exchange_flow(self, login_page, crypto_page, test_data):
-        """
-        TEST PRINCIPAL: Flujo completo de intercambio ARS → USDT
-        
-        Este es el test que cumple con los requisitos de la prueba técnica:
-        1. Login en la aplicación
-        2. Navegar a sección Cripto
-        3. Seleccionar intercambio
-        4. Configurar ARS → USDT
-        5. Ingresar monto (1000 ARS)
-        6. Confirmar transacción
-        7. Validar éxito
-        """
         logger.info("=" * 70)
         logger.info("TEST: Flujo completo ARS -> USDT")
         logger.info("=" * 70)
@@ -120,9 +102,6 @@ class TestCryptoExchange:
         time.sleep(3)
     
     def test_negative_min_amount_validation(self, login_page, crypto_page, test_data):
-        """
-        Test negativo: Validar error con monto menor a 1000 ARS
-        """
         logger.info("=" * 70)
         logger.info("TEST NEGATIVO: Monto menor al mínimo")
         logger.info("=" * 70)
@@ -146,9 +125,6 @@ class TestCryptoExchange:
         
     @pytest.mark.smoke
     def test_smoke_navigation_to_crypto(self, login_page, crypto_page, test_data):
-        """
-        Smoke test: Solo verificar navegación hasta sección cripto
-        """
         logger.info("SMOKE TEST: Navegación a Cripto")
 
         # Login
@@ -163,9 +139,3 @@ class TestCryptoExchange:
         assert crypto_page.verify_intercambiar_screen(), "Pantalla Intercambiar no cargó"
 
         logger.info("SMOKE TEST PASSED")
-
-
-# Para ejecutar desde línea de comandos:
-# pytest mobile-tests/tests/test_crypto_exchange.py -v -s
-# pytest mobile-tests/tests/test_crypto_exchange.py::TestCryptoExchange::test_complete_crypto_exchange_flow -v -s
-# pytest mobile-tests/tests/test_crypto_exchange.py -m smoke -v -s
