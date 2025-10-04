@@ -1,0 +1,761 @@
+{
+	"info": {
+		"name": "Petstore API - Vita Wallet Test",
+		"description": "Collection completa para testing de Petstore API con casos positivos y negativos",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "https://petstore.swagger.io/v2",
+			"type": "string"
+		},
+		{
+			"key": "petId",
+			"value": "{{$randomInt}}",
+			"type": "string"
+		},
+		{
+			"key": "orderId",
+			"value": "{{$randomInt}}",
+			"type": "string"
+		}
+	],
+	"item": [
+		{
+			"name": "Pet Endpoints",
+			"item": [
+				{
+					"name": "POST - Create Pet (Positive)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Response has correct pet data', function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.name).to.eql('Firulais');",
+									"    pm.expect(jsonData.status).to.eql('available');",
+									"});",
+									"",
+									"// Save petId for next requests",
+									"var jsonData = pm.response.json();",
+									"pm.collectionVariables.set('createdPetId', jsonData.id);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"id\": {{petId}},\n  \"name\": \"Firulais\",\n  \"category\": {\n    \"id\": 1,\n    \"name\": \"Dogs\"\n  },\n  \"photoUrls\": [\n    \"https://example.com/photo.jpg\"\n  ],\n  \"tags\": [\n    {\n      \"id\": 1,\n      \"name\": \"friendly\"\n    }\n  ],\n  \"status\": \"available\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/pet",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"pet"
+							]
+						},
+						"description": "✅ Caso positivo: Crear una mascota con todos los datos válidos"
+					}
+				},
+				{
+					"name": "POST - Create Pet Invalid Data (Negative)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 400 or 405 or 500', function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([400, 405, 500]);",
+									"});",
+									"",
+									"pm.test('Request with invalid data rejected', function () {",
+									"    pm.expect(pm.response.code).to.not.equal(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/pet",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"pet"
+							]
+						},
+						"description": "❌ Caso negativo: Intentar crear mascota con datos inválidos (nombre vacío)"
+					}
+				},
+				{
+					"name": "POST - Create Pet Without Body (Negative)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code indicates error', function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([400, 405, 415]);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{baseUrl}}/pet",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"pet"
+							]
+						},
+						"description": "❌ Caso negativo: Crear mascota sin enviar body"
+					}
+				},
+				{
+					"name": "GET - Find Pet by ID (Positive)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Pet data is correct', function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('id');",
+									"    pm.expect(jsonData).to.have.property('name');",
+									"    pm.expect(jsonData).to.have.property('status');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/pet/{{createdPetId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"pet",
+								"{{createdPetId}}"
+							]
+						},
+						"description": "✅ Caso positivo: Obtener mascota existente por ID"
+					}
+				},
+				{
+					"name": "GET - Find Pet Not Found (Negative)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 404', function () {",
+									"    pm.response.to.have.status(404);",
+									"});",
+									"",
+									"pm.test('Error message present', function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('message');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/pet/999999999",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"pet",
+								"999999999"
+							]
+						},
+						"description": "❌ Caso negativo: Buscar mascota con ID inexistente"
+					}
+				},
+				{
+					"name": "GET - Find Pet Invalid ID (Negative)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 400 or 404', function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([400, 404]);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/pet/invalid_id_string",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"pet",
+								"invalid_id_string"
+							]
+						},
+						"description": "❌ Caso negativo: Buscar mascota con ID de formato inválido"
+					}
+				},
+				{
+					"name": "GET - Find Pets by Status (Positive)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Response is an array', function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.be.an('array');",
+									"});",
+									"",
+									"pm.test('All pets have available status', function () {",
+									"    var jsonData = pm.response.json();",
+									"    jsonData.forEach(function(pet) {",
+									"        if (pet.status) {",
+									"            pm.expect(pet.status).to.eql('available');",
+									"        }",
+									"    });",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/pet/findByStatus?status=available",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"pet",
+								"findByStatus"
+							],
+							"query": [
+								{
+									"key": "status",
+									"value": "available"
+								}
+							]
+						},
+						"description": "✅ Caso positivo: Buscar mascotas por status 'available'"
+					}
+				},
+				{
+					"name": "PUT - Update Pet (Positive)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Pet updated successfully', function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.name).to.eql('Firulais Updated');",
+									"    pm.expect(jsonData.status).to.eql('sold');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"id\": {{createdPetId}},\n  \"name\": \"Firulais Updated\",\n  \"category\": {\n    \"id\": 1,\n    \"name\": \"Dogs\"\n  },\n  \"photoUrls\": [\n    \"https://example.com/photo.jpg\"\n  ],\n  \"tags\": [\n    {\n      \"id\": 1,\n      \"name\": \"friendly\"\n    }\n  ],\n  \"status\": \"sold\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/pet",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"pet"
+							]
+						},
+						"description": "✅ Caso positivo: Actualizar mascota existente"
+					}
+				},
+				{
+					"name": "PUT - Update Pet Invalid Data (Negative)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code indicates error', function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([400, 405, 500]);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"id\": \"invalid_string_id\",\n  \"name\": 12345\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/pet",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"pet"
+							]
+						},
+						"description": "❌ Caso negativo: Actualizar con tipos de datos inválidos"
+					}
+				},
+				{
+					"name": "DELETE - Delete Pet (Positive)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200', function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/pet/{{createdPetId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"pet",
+								"{{createdPetId}}"
+							]
+						},
+						"description": "✅ Caso positivo: Eliminar mascota existente"
+					}
+				},
+				{
+					"name": "DELETE - Delete Pet Not Found (Negative)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 404 or 200', function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([404, 200]);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/pet/999999999",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"pet",
+								"999999999"
+							]
+						},
+						"description": "❌ Caso negativo: Eliminar mascota inexistente"
+					}
+				},
+				{
+					"name": "DELETE - Delete Pet Invalid ID (Negative)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code indicates error', function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([400, 404]);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/pet/invalid_id",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"pet",
+								"invalid_id"
+							]
+						},
+						"description": "❌ Caso negativo: Eliminar con ID de formato inválido"
+					}
+				}
+			],
+			"description": "Tests completos para Pet endpoints con casos positivos y negativos"
+		},
+		{
+			"name": "Store Endpoints",
+			"item": [
+				{
+					"name": "POST - Create Order (Positive)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Order created successfully', function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('id');",
+									"    pm.expect(jsonData.status).to.eql('placed');",
+									"});",
+									"",
+									"var jsonData = pm.response.json();",
+									"pm.collectionVariables.set('createdOrderId', jsonData.id);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"id\": {{orderId}},\n  \"petId\": 123,\n  \"quantity\": 1,\n  \"shipDate\": \"2025-10-02T00:00:00.000Z\",\n  \"status\": \"placed\",\n  \"complete\": true\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/store/order",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"store",
+								"order"
+							]
+						},
+						"description": "✅ Caso positivo: Crear orden válida"
+					}
+				},
+				{
+					"name": "POST - Create Order Invalid (Negative)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code indicates error', function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([400, 405, 500]);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"quantity\": \"invalid_string\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/store/order",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"store",
+								"order"
+							]
+						},
+						"description": "❌ Caso negativo: Crear orden con datos inválidos"
+					}
+				},
+				{
+					"name": "GET - Get Order by ID (Positive)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Order data is present', function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('id');",
+									"    pm.expect(jsonData).to.have.property('status');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/store/order/{{createdOrderId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"store",
+								"order",
+								"{{createdOrderId}}"
+							]
+						},
+						"description": "✅ Caso positivo: Obtener orden existente"
+					}
+				},
+				{
+					"name": "GET - Get Order Not Found (Negative)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 404', function () {",
+									"    pm.response.to.have.status(404);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/store/order/999999",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"store",
+								"order",
+								"999999"
+							]
+						},
+						"description": "❌ Caso negativo: Buscar orden inexistente"
+					}
+				},
+				{
+					"name": "GET - Store Inventory (Positive)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Inventory is an object', function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.be.an('object');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/store/inventory",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"store",
+								"inventory"
+							]
+						},
+						"description": "✅ Caso positivo: Obtener inventario de la tienda"
+					}
+				},
+				{
+					"name": "DELETE - Delete Order (Positive)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200', function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/store/order/{{createdOrderId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"store",
+								"order",
+								"{{createdOrderId}}"
+							]
+						},
+						"description": "✅ Caso positivo: Eliminar orden existente"
+					}
+				},
+				{
+					"name": "DELETE - Delete Order Not Found (Negative)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 404', function () {",
+									"    pm.response.to.have.status(404);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/store/order/999999",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"store",
+								"order",
+								"999999"
+							]
+						},
+						"description": "❌ Caso negativo: Eliminar orden inexistente"
+					}
+				}
+			],
+			"description": "Tests completos para Store endpoints con casos positivos y negativos"
+		}
+	]
+}

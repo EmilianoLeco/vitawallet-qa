@@ -1,0 +1,25 @@
+{
+  "name": "qa-automation-vitawallet",
+  "version": "1.0.0",
+  "description": "QA Automation project for Vita Wallet - API and Mobile Testing",
+  "scripts": {
+    "test:api": "newman run api-tests/postman/Petstore_Collection.json -r htmlextra --reporter-htmlextra-export reports/newman/report.html",
+    "appium": "appium"
+  },
+  "keywords": [
+    "qa",
+    "automation",
+    "testing",
+    "appium",
+    "newman",
+    "api-testing",
+    "mobile-testing"
+  ],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "newman": "^6.1.0",
+    "newman-reporter-htmlextra": "^1.23.0",
+    "appium": "^2.11.0"
+  }
+}
