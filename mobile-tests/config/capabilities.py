@@ -48,6 +48,12 @@ class AppiumCapabilities:
             # Performance
             "skipDeviceInitialization": False,
             "ignoreHiddenApiPolicyError": True,
+
+            # Forzar reinstalación de helper apps de Appium
+            # Esto reinstala io.appium.settings y io.appium.uiautomator2.server
+            "skipServerInstallation": False,
+            "skipUnlock": True,
+            "allowInvisibleElements": True,
         }
         
         return capabilities

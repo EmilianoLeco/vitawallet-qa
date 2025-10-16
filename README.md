@@ -372,7 +372,25 @@ TO_CURRENCY=USDT
 
 ---
 
-## Troubleshooting
+## Solución de Problemas Comunes
+
+### Diagnóstico Rápido
+
+**Script de verificación de variables de entorno:**
+```bash
+./venv/Scripts/python.exe check_env.py
+```
+Verifica que todas las variables del `.env` estén configuradas correctamente.
+
+**Script de verificación de apps de Appium:**
+```bash
+./venv/Scripts/python.exe check_appium_apps.py
+```
+Verifica que las apps de Appium estén instaladas en el dispositivo Android.
+
+**Documentación completa de solución de problemas:**
+- Ver [RESUMEN_SOLUCION.md](RESUMEN_SOLUCION.md) - Resumen ejecutivo de soluciones
+- Ver [SOLUCION_ENV.md](SOLUCION_ENV.md) - Guía detallada de configuración de `.env` y Appium
 
 ### Scripts BAT
 
@@ -422,6 +440,17 @@ adb devices
 adb kill-server
 adb start-server
 ```
+
+**Error: "Cannot start the 'io.appium.settings' application"**
+- Las apps de Appium se reinstalarán automáticamente gracias a `skipServerInstallation: False`
+- Verificar manualmente: `./venv/Scripts/python.exe check_appium_apps.py`
+- Reinstalar driver: `appium driver update uiautomator2`
+- Ver [SOLUCION_ENV.md](SOLUCION_ENV.md) para más detalles
+
+**Error: "Variables del .env no se cargan correctamente"**
+- Este problema fue resuelto moviendo `load_dotenv()` a `conftest.py`
+- Verificar: `./venv/Scripts/python.exe check_env.py`
+- Ver [RESUMEN_SOLUCION.md](RESUMEN_SOLUCION.md) para la solución completa
 
 **Error: "App not found"**
 - Verificar que el APK esté en la ruta correcta

@@ -26,6 +26,7 @@ Thumbs.db
 .env
 .env.local
 node_modules
+package-lock.json
 
 # APK files
 *.apk

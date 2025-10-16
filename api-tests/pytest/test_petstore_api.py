@@ -1,6 +1,7 @@
 import pytest
 import requests
 import random
+import time
 
 BASE_URL = "https://petstore.swagger.io/v2"
 
@@ -54,7 +55,10 @@ class TestPetAPI:
         """GET - Caso positivo: Obtener mascota por ID existente"""
         # First create a pet
         requests.post(f"{BASE_URL}/pet", json=self.pet_data)
-        
+
+        # Wait for API to process
+        time.sleep(0.5)
+
         # Then get it
         response = requests.get(f"{BASE_URL}/pet/{self.pet_id}")
         

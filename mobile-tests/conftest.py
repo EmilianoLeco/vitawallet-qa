@@ -6,6 +6,38 @@ from pathlib import Path
 from datetime import datetime
 from appium import webdriver
 from appium.options.android import UiAutomator2Options
+from dotenv import load_dotenv
+
+# CARGAR VARIABLES DE ENTORNO AL INICIO
+# Buscar el archivo .env en el directorio raíz del proyecto
+BASE_DIR = Path(__file__).parent.parent
+env_path = BASE_DIR / ".env"
+
+if env_path.exists():
+    load_dotenv(dotenv_path=env_path)
+    print(f"[OK] Variables de entorno cargadas desde: {env_path}")
+
+    # Validar variables críticas
+    critical_vars = {
+        'ANDROID_DEVICE_NAME': os.getenv('ANDROID_DEVICE_NAME'),
+        'ANDROID_UDID': os.getenv('ANDROID_UDID'),
+        'ANDROID_PLATFORM_VERSION': os.getenv('ANDROID_PLATFORM_VERSION'),
+        'QA_USER_EMAIL': os.getenv('QA_USER_EMAIL'),
+        'QA_USER_PASSWORD': os.getenv('QA_USER_PASSWORD')
+    }
+
+    print("\nVariables criticas cargadas:")
+    for var_name, var_value in critical_vars.items():
+        status = "[OK]" if var_value else "[FAIL]"
+        display_value = var_value if var_name != 'QA_USER_PASSWORD' else "***" if var_value else None
+        print(f"  {status} {var_name} = {display_value}")
+
+    missing_vars = [k for k, v in critical_vars.items() if not v]
+    if missing_vars:
+        print(f"\n[WARNING] Variables faltantes en .env: {', '.join(missing_vars)}")
+else:
+    print(f"[ERROR] No se encontro el archivo .env en: {env_path}")
+    print("Crea el archivo .env en la raiz del proyecto con las variables necesarias")
 
 def pytest_configure(config):
     """Configuración inicial de pytest para mobile tests"""

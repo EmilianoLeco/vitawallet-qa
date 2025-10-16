@@ -25,7 +25,7 @@
   "license": "ISC",
   "devDependencies": {
     "appium": "^2.11.0",
-    "appium-uiautomator2-driver": "^2.34.2",
+    "appium-uiautomator2-driver": "^2.45.1",
     "newman": "^6.1.1",
     "newman-reporter-htmlextra": "^1.23.1"
   },

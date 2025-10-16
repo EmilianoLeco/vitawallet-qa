@@ -84,86 +84,55 @@ class LoginPage(BasePage):
         return closed == len(sequences)
 
     def dismiss_popup_if_present(self):
+        """Cerrar cualquier popup/modal que aparezca después del login"""
         try:
-            self.logger.info("Verificando si hay popup post-login...")
-            
-            # Esperar a que el popup aparezca
-            self.wait_for_seconds(5)
+            self.logger.info("Buscando y cerrando popups post-login...")
+            self.wait_for_seconds(3)
             self.take_screenshot("popup_check")
-            
-            # Estrategia 1: Accessibility ID (ViewGroup con content-desc)
-            try:
-                if self.is_element_visible(self.POPUP_ENTENDIDO_BUTTON, timeout=3):
-                    self.logger.info("Popup detectado - Método 1 (accessibility id)")
-                    element = self.find_element(self.POPUP_ENTENDIDO_BUTTON)
-                    element.click()
-                    self.wait_for_seconds(2)
-                    self.take_screenshot("popup_dismissed_success")
-                    self.logger.info("Popup cerrado exitosamente")
-                    return True
-            except Exception as e:
-                self.logger.info(f"Método 1 falló: {str(e)[:100]}")
-            
-            # Estrategia 2: XPath con ViewGroup
-            try:
-                if self.is_element_visible(self.POPUP_ENTENDIDO_XPATH, timeout=2):
-                    self.logger.info("Popup detectado - Método 2 (xpath viewgroup)")
-                    element = self.find_element(self.POPUP_ENTENDIDO_XPATH)
-                    element.click()
-                    self.wait_for_seconds(2)
-                    self.take_screenshot("popup_dismissed_success")
-                    self.logger.info("Popup cerrado exitosamente")
-                    return True
-            except Exception as e:
-                self.logger.info(f"Método 2 falló: {str(e)[:100]}")
-            
-            # Estrategia 3: XPath con TextView hijo
-            try:
-                if self.is_element_visible(self.POPUP_ENTENDIDO_TEXT, timeout=2):
-                    self.logger.info("Popup detectado - Método 3 (xpath textview)")
-                    element = self.find_element(self.POPUP_ENTENDIDO_TEXT)
-                    element.click()
-                    self.wait_for_seconds(2)
-                    self.take_screenshot("popup_dismissed_success")
-                    self.logger.info("Popup cerrado exitosamente")
-                    return True
-            except Exception as e:
-                self.logger.info(f"Método 3 falló: {str(e)[:100]}")
-            
-            # Estrategia 4: UiAutomator con description
-            try:
-                if self.is_element_visible(self.POPUP_ENTENDIDO_UIAUTOMATOR, timeout=2):
-                    self.logger.info("Popup detectado - Método 4 (uiautomator)")
-                    element = self.find_element(self.POPUP_ENTENDIDO_UIAUTOMATOR)
-                    element.click()
-                    self.wait_for_seconds(2)
-                    self.take_screenshot("popup_dismissed_success")
-                    self.logger.info("Popup cerrado exitosamente")
-                    return True
-            except Exception as e:
-                self.logger.info(f"Método 4 falló: {str(e)[:100]}")
-            
-            # Estrategia 5: Tap por coordenadas (último recurso)
-            try:
-                self.logger.info("Intentando cerrar popup por coordenadas...")
-                screen_size = self.driver.get_window_size()
-                x = screen_size['width'] // 2
-                y = int(screen_size['height'] * 0.68)
 
-                self.driver.tap([(x, y)])
-                self.wait_for_seconds(2)
-                self.take_screenshot("popup_dismissed_coordinates")
-                self.logger.info("Popup cerrado por coordenadas")
+            popups_closed = 0
+            max_attempts = 5
+
+            for attempt in range(max_attempts):
+                closed_this_round = False
+
+                # Buscar botón X para cerrar modales/popups
+                close_button_selectors = [
+                    (AppiumBy.XPATH, '//android.view.ViewGroup[contains(@content-desc, "close")]'),
+                    (AppiumBy.XPATH, '//*[contains(@content-desc, "cerrar")]'),
+                    (AppiumBy.XPATH, '//android.widget.TextView[@text="×"]'),
+                    (AppiumBy.ANDROID_UIAUTOMATOR, 'new UiSelector().descriptionContains("close")'),
+                ]
+
+                for selector in close_button_selectors:
+                    try:
+                        if self.is_element_visible(selector, timeout=2):
+                            self.logger.info(f"Popup/Modal detectado (intento {attempt + 1}) - {selector}")
+                            element = self.find_element(selector)
+                            element.click()
+                            self.wait_for_seconds(1)
+                            popups_closed += 1
+                            closed_this_round = True
+                            self.logger.info(f"Popup/Modal cerrado exitosamente")
+                            break
+                    except Exception as e:
+                        continue
+
+                # Si no se cerró ningún popup en este intento, salir
+                if not closed_this_round:
+                    break
+
+            if popups_closed > 0:
+                self.logger.info(f"Total de popups cerrados: {popups_closed}")
+                self.take_screenshot("popups_dismissed")
                 return True
-            except Exception as e:
-                self.logger.info(f"Método 5 falló: {str(e)[:100]}")
-
-            self.logger.warning("No se detectó popup o ya estaba cerrado")
-            return False
+            else:
+                self.logger.info("No se detectaron popups/modales post-login")
+                return False
 
         except Exception as e:
-            self.logger.error(f"Error crítico al cerrar popup: {e}")
-            self.take_screenshot("error_popup_critical")
+            self.logger.error(f"Error cerrando popups: {e}")
+            self.take_screenshot("error_dismiss_popup")
             return False
 
     def click_welcome_login_button(self):
